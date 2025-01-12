@@ -1,16 +1,17 @@
-import { useState, createContext, useContext } from 'react'
+import { useState, createContext, useContext } from 'react';
 
-const GlobalContext = createContext(null)
+export const GlobalContext = createContext(null);
 
 export const GlobalState = (props) => {
-    const [user, setUser] = useState(null)
+    const [user, setUser] = useState(null);
 
     return (
-        <GlobalContext.Provider value={[user, setUser]}>
+        <GlobalContext.Provider
+            value={{
+                user: [user, setUser],
+            }}
+        >
             {props.children}
         </GlobalContext.Provider>
-    )
-}
-
-// custom hook for retrieving the provided state
-export const useUser = () => useContext(GlobalContext)
+    );
+};

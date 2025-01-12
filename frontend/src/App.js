@@ -1,15 +1,24 @@
-import { LoginOrRegister } from './components/authentication/LoginOrRegister';
+import { Route, Routes } from 'react-router-dom';
 import { ProblemList } from './components/problems/ProblemList';
-import { useUser } from './GlobalState';
+import { Login } from './components/authentication/Login';
+import { Register } from './components/authentication/Register';
+import { ProtectedRoute } from './components/infrastructure/ProtectedRoute';
 
 function App() {
-    const [user, setUser] = useUser();
-
-    if (!user) {
-        return <LoginOrRegister />;
-    }
-
-    return <ProblemList />;
+    return (
+        <Routes>
+            <Route
+                path="/"
+                element={
+                    <ProtectedRoute>
+                        <ProblemList />
+                    </ProtectedRoute>
+                }
+            />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+        </Routes>
+    );
 }
 
 export default App;
