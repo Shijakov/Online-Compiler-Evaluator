@@ -58,5 +58,5 @@ Route::group(['middleware' => ['auth:sanctum', 'restrictRoles:user,admin']], fun
     Route::get('/problem/{id}', [ProblemController::class, 'getProblem']);
     Route::get('/problem/{id}/solution_history', [ProblemController::class, 'solutionHistory']);
     Route::post('/code', [CodeController::class, 'submitCode']);
-    Route::get('/code', [CodeController::class, 'getStatus']);
+    Route::get('/code/{executionId}', [CodeController::class, 'getStatus']);
 });

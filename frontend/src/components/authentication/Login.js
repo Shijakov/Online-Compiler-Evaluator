@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { useBackend } from '../../hooks/backend';
+import { STATUS_ERROR, useBackend } from '../../hooks/backend';
+import { useUser } from '../../hooks/user';
 
 export const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const [call, loading, error] = useBackend();
+    const { call, error } = useBackend();
+    const { setUser } = useUser();
     const navigate = useNavigate();
 
     const onSubmit = async (event) => {
@@ -16,12 +18,17 @@ export const Login = () => {
             return;
         }
 
-        const response = await call('/api/login', 'POST', {
+        const response = await call('/login', 'POST', {
             username,
             password,
         });
 
-        console.log(response);
+        if (response.status === STATUS_ERROR) {
+            return;
+        }
+
+        setUser({ token: response.data.token, roles: response.data.roles });
+
         navigate('/');
     };
 
@@ -52,6 +59,13 @@ export const Login = () => {
             <Button type="submit" onClick={onSubmit}>
                 Submit
             </Button>
+            <div
+                style={{
+                    color: 'red',
+                }}
+            >
+                {error && error.message}
+            </div>
         </Form>
     );
 };

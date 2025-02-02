@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { useBackend } from '../../hooks/backend';
+import { STATUS_ERROR, useBackend } from '../../hooks/backend';
+import { useUser } from '../../hooks/user';
 
 export const Register = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const [call, loading, error] = useBackend();
+    const { call } = useBackend();
     const navigate = useNavigate();
+    const { setUser } = useUser();
 
     const onSubmit = async (event) => {
         event.preventDefault();
@@ -23,7 +25,12 @@ export const Register = () => {
             password,
         });
 
-        console.log(response);
+        if (response.status === STATUS_ERROR) {
+            return;
+        }
+
+        setUser({ token: response.data.token, roles: response.data.roles });
+
         navigate('/');
     };
 

@@ -16,6 +16,12 @@ def check_solution(ch, method, properties, body, r, pg_conn):
     pg.execute(query, (result['code'], result['status'], result['output'], result['problem_id'], result['user_id']))
     solution_id = pg.fetchone()[0]
 
+    if result['status'] == 'error':
+        pg_conn.commit()
+        print(" [x] Done")
+        ch.basic_ack(delivery_tag = method.delivery_tag)
+        return
+
     for i, test_case in enumerate(result['test_cases']):
         query = """
         INSERT INTO solution_test_cases(solution_id, input, output, expected_output, is_correct)
@@ -25,9 +31,8 @@ def check_solution(ch, method, properties, body, r, pg_conn):
 
     pg_conn.commit()
     r.set(result['id'], json.dumps(result), ex=10)
-    ch.basic_ack(delivery_tag = method.delivery_tag)
-
     print(" [x] Done")
+    ch.basic_ack(delivery_tag = method.delivery_tag)
 
 
 def main():

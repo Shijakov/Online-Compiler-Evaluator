@@ -42,7 +42,7 @@ class AuthController extends Controller
         if (!$user || !Hash::check($fields['password'], $user->password)) {
             return response([
                 'message' => 'Wrong credentials'
-            ]);
+            ], 401);
         }
 
         $token = $user->createToken('my-token')->plainTextToken;

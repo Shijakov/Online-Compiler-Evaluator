@@ -31,9 +31,9 @@ class CodeService
             ])
         ];
 
-        $this->rabbitMQService->publish(json_encode($problemToSend));
-
         Redis::set($executionId, json_encode(["status" => "waiting"]));
+
+        $this->rabbitMQService->publish(json_encode($problemToSend));
 
         return $executionId;
     }

@@ -27,11 +27,9 @@ class CodeController extends Controller
         ], Response::HTTP_CREATED);
     }
 
-    public function getStatus(Request $request): JsonResponse
+    public function getStatus(string $executionId): JsonResponse
     {
-        $data = $request->get('executionId');
-
-        $executionId = $this->codeService->getExecutionStatus($data);
+        $executionId = $this->codeService->getExecutionStatus($executionId);
 
         return new JsonResponse($executionId, Response::HTTP_OK);
     }
