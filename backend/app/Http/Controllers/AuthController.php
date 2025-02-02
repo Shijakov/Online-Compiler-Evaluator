@@ -21,12 +21,13 @@ class AuthController extends Controller
 
         // Mass assign the validated request data to a new instance of the User model
         $user = User::create($data);
-        $user->assignRole(Role::ROLE_USER);
+        $user->assignRole(Role::from(Role::ROLE_USER));
         $token = $user->createToken('my-token')->plainTextToken;
 
         return response()->json([
             'token' => $token,
-            'Type' => 'Bearer'
+            'Type' => 'Bearer',
+            'roles' => $user->getRoles()->pluck('name')->toArray()
         ]);
     }
 
@@ -50,7 +51,7 @@ class AuthController extends Controller
         return response()->json([
             'token' => $token,
             'Type' => 'Bearer',
-            'roles' => $user->getRoles()->pluck('name')->toArray() // include user role in response
+            'roles' => $user->getRoles()->pluck('name')->toArray()
         ]);
     }
 
@@ -83,7 +84,7 @@ class AuthController extends Controller
     public function removeRole(Request $request, string $id): Response
     {
         $data = $request->validate([
-            'role' => implode(',', ['required|in:', Role::ROLE_ADMIN, Role::ROLE_AUTHOR, Role::ROLE_USER]),
+            'role' => implode(',', ['required|in:', Role::ROLE_ADMIN, Role::ROLE_AUTHOR]),
         ]);
 
         $user = User::find($id);

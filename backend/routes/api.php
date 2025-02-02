@@ -35,11 +35,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
-//protected routes for creating problems and assigning roles
+
 Route::group(['middleware' => ['auth:sanctum', 'restrictRoles:admin']], function () {
-    Route::post('/problem', [ProblemController::class, 'createProblem']);
-    Route::put('/problem/{id}', [ProblemController::class, 'updateProblem']);
-    Route::delete('/problem/{id}', [ProblemController::class, 'deleteProblem']);
     Route::get('/user', function () {
         return User::all()->map(fn($user) => [
             'id' => $user->getId(),
@@ -52,8 +49,14 @@ Route::group(['middleware' => ['auth:sanctum', 'restrictRoles:admin']], function
     Route::put('/role/remove/{id}', [AuthController::class, 'removeRole']);
 });
 
+Route::group(['middleware' => ['auth:sanctum', 'restrictRoles:admin,author']], function () {
+    Route::post('/problem', [ProblemController::class, 'createProblem']);
+    Route::put('/problem/{id}', [ProblemController::class, 'updateProblem']);
+    Route::delete('/problem/{id}', [ProblemController::class, 'deleteProblem']);
+});
+
 //protected routes for submiting code solutiremove_roleons
-Route::group(['middleware' => ['auth:sanctum', 'restrictRoles:user,admin']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'restrictRoles:user,author,admin']], function () {
     Route::get('/problem', [ProblemController::class, 'listProblems']);
     Route::get('/problem/{id}', [ProblemController::class, 'getProblem']);
     Route::get('/problem/{id}/solution_history', [ProblemController::class, 'solutionHistory']);

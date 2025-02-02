@@ -15,9 +15,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ProblemController extends Controller
 {
-    public function listProblems(Request $request): Collection
+    public function listProblems(Request $request)
     {
+        $userId = $request->user()->getId();
+
         $problemSolutions = Solution::where('status', 'success')
+            ->where('user_id', $userId)
             ->select(['problem_id', 'status'])
             ->distinct();
 
@@ -26,12 +29,12 @@ class ProblemController extends Controller
         })
             ->select(['problems.id as id', 'problems.title as title'])
             ->selectRaw('case when solutions.status = \'success\' then true else false end as is_solved')
-            ->get();
+            ->paginate(5);
     }
 
     public function getProblem(int $id): Problem
     {
-        return Problem::find($id);
+        return Problem::with('testCases')->findOrFail($id);
     }
 
     public function createProblem(Request $request): Problem

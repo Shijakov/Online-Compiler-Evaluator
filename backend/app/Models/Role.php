@@ -24,9 +24,9 @@ class Role extends Model
         return $this->name;
     }
 
-    public function from(string $name): self
+    public static function from(string $name): self
     {
-        $role = $this->where('name', '=', $name)->first();
+        $role = Role::where('name', '=', $name)->first();
         if ($role === null) {
             throw new RoleDoesntExistException($name);
         }
