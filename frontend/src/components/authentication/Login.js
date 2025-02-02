@@ -8,7 +8,7 @@ export const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const { call, error } = useBackend();
+    const { call } = useBackend();
     const { setUser } = useUser();
     const navigate = useNavigate();
 
@@ -57,13 +57,6 @@ export const Login = () => {
             </div>
 
             <Button type="submit">Submit</Button>
-            <div
-                style={{
-                    color: 'red',
-                }}
-            >
-                {error && error.message}
-            </div>
         </Form>
     );
 };

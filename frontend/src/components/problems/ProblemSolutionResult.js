@@ -15,24 +15,20 @@ export const ProblemSolutionResult = ({ executionId }) => {
         if (!executionId) return;
 
         const interval = setInterval(async () => {
-            try {
-                const response = await call(
-                    '/code/' + executionId,
-                    'GET',
-                    {},
-                    user
-                );
+            const response = await call(
+                '/code/' + executionId,
+                'GET',
+                {},
+                user
+            );
 
-                setExecution(response.data);
+            setExecution(response.data);
 
-                if (
-                    response.data['status'] !== 'processing' &&
-                    response.data['status'] !== 'waiting'
-                ) {
-                    clearInterval(interval);
-                }
-            } catch (error) {
-                console.error('Error fetching execution status:', error);
+            if (
+                response.data['status'] !== 'processing' &&
+                response.data['status'] !== 'waiting'
+            ) {
+                clearInterval(interval);
             }
         }, 1000);
 

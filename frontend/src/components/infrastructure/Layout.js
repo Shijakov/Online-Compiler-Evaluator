@@ -2,14 +2,14 @@ import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Container, Row, Col } from 'react-bootstrap';
 import { Sidebar } from './Sidebar';
-import { useBackend } from '../../hooks/backend';
 import { ToastContainer, toast } from 'react-toastify';
 import { useUser } from '../../hooks/user';
+import { useError } from '../../hooks/error';
 
 export const Layout = ({ children }) => {
     const location = useLocation();
     const notify = (message) => toast(message);
-    const { error } = useBackend();
+    const { error } = useError();
     const { hasRole } = useUser();
 
     useEffect(() => {

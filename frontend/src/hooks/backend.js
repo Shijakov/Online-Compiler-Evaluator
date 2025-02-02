@@ -1,12 +1,14 @@
 import { useCallback, useState } from 'react';
+import { useError } from './error';
 import axios from '../config/axios';
 
 export const STATUS_OK = 'OK';
 export const STATUS_ERROR = 'ERROR';
 
 export const useBackend = () => {
+    const { setError } = useError();
+
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     const ok = (data) => {
         return {
@@ -21,6 +23,14 @@ export const useBackend = () => {
             data,
         };
     };
+
+    const changeError = useCallback(
+        (message) => {
+            setError(message);
+            setTimeout(() => setError(null), 100);
+        },
+        [setError]
+    );
 
     const call = useCallback(
         async (
@@ -50,21 +60,26 @@ export const useBackend = () => {
                     headers,
                 });
 
-                if (response.status !== 200) {
-                    setError('Response failed');
+                if (Math.floor(response.status / 100) !== 2) {
+                    changeError('Response failed');
                 }
 
                 return ok(response.data);
             } catch (err) {
-                setError(err.response.data);
+                if (err.message) {
+                    changeError(err.message);
+                }
+                if (err.response) {
+                    changeError(err.response.data.message);
+                }
 
                 return fail(null);
             } finally {
                 setLoading(false);
             }
         },
-        []
+        [changeError]
     );
 
-    return { call, loading, error };
+    return { call, loading };
 };

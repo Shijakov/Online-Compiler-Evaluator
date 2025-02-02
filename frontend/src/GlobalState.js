@@ -4,6 +4,7 @@ export const GlobalContext = createContext(null);
 
 export const GlobalState = (props) => {
     const [user, setUser] = useState(null);
+    const [error, setError] = useState(null);
 
     const hasRole = (role) => {
         return isAuthenticated() && user.roles.includes(role);
@@ -16,7 +17,13 @@ export const GlobalState = (props) => {
     return (
         <GlobalContext.Provider
             value={{
-                user: { user, setUser, hasRole, isAuthenticated },
+                user: {
+                    user,
+                    setUser,
+                    hasRole,
+                    isAuthenticated,
+                },
+                error: { error, setError },
             }}
         >
             {props.children}
