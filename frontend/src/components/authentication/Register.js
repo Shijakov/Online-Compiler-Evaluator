@@ -8,6 +8,7 @@ export const Register = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfrimPassword] = useState('');
 
     const { call } = useBackend();
     const navigate = useNavigate();
@@ -15,14 +16,15 @@ export const Register = () => {
 
     const onSubmit = async (event) => {
         event.preventDefault();
-        if (!username || !email || !password) {
+        if (!username || !email || !password || password !== confirmPassword) {
             return;
         }
 
-        const response = await call('/api/register', 'POST', {
+        const response = await call('/register', 'POST', {
             username,
             email,
             password,
+            password_confirmation: confirmPassword,
         });
 
         if (response.status === STATUS_ERROR) {
@@ -31,11 +33,11 @@ export const Register = () => {
 
         setUser({ token: response.data.token, roles: response.data.roles });
 
-        navigate('/');
+        navigate('/problem');
     };
 
     return (
-        <Form>
+        <Form onSubmit={onSubmit}>
             <Form.Group className="mb-3">
                 <Form.Label>Username</Form.Label>
                 <Form.Control
@@ -63,13 +65,20 @@ export const Register = () => {
                 />
             </Form.Group>
 
+            <Form.Group className="mb-3">
+                <Form.Label>Confirm Password</Form.Label>
+                <Form.Control
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(event) => setConfrimPassword(event.target.value)}
+                />
+            </Form.Group>
+
             <div>
                 <Link to="/login">Have an account? Login</Link>
             </div>
 
-            <Button type="submit" onClick={onSubmit}>
-                Submit
-            </Button>
+            <Button type="submit">Submit</Button>
         </Form>
     );
 };

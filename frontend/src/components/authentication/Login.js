@@ -29,11 +29,11 @@ export const Login = () => {
 
         setUser({ token: response.data.token, roles: response.data.roles });
 
-        navigate('/');
+        navigate('/problem');
     };
 
     return (
-        <Form>
+        <Form onSubmit={onSubmit}>
             <Form.Group className="mb-3">
                 <Form.Label>Username</Form.Label>
                 <Form.Control
@@ -56,9 +56,7 @@ export const Login = () => {
                 <Link to="/register">Don't have an account? Register</Link>
             </div>
 
-            <Button type="submit" onClick={onSubmit}>
-                Submit
-            </Button>
+            <Button type="submit">Submit</Button>
             <div
                 style={{
                     color: 'red',

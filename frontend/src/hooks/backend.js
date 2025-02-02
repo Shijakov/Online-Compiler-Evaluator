@@ -39,6 +39,10 @@ export const useBackend = () => {
                     headers.Authorization = `Bearer ${user.token}`;
                 }
 
+                if (config.page) {
+                    endpoint = endpoint + '?page=' + config.page;
+                }
+
                 const response = await axios({
                     url: endpoint,
                     method,

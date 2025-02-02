@@ -1,54 +1,36 @@
 import { useEffect, useState } from 'react';
 import { Card, Form, Button, Col } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
-import { STATUS_OK, useBackend } from '../../hooks/backend';
-import { useUser } from '../../hooks/user';
+import { EditableTestCases } from './EditableTestCases';
 
-const AuthorProblemDetails = () => {
-    const { id: problemId } = useParams();
-    const { call } = useBackend();
-    const { user } = useUser();
+const deepCopyTestCases = (testCases) => {
+    return testCases.map((item) => ({
+        input: item.input,
+        expected_output: item.expected_output,
+    }));
+};
 
-    const [problem, setProblem] = useState(null);
-
+export const EditableProblem = ({ problem = null, onSubmit }) => {
     const [editedProblem, setEditedProblem] = useState({
         title: problem?.title ?? '',
         description: problem?.description ?? '',
         mem_limit_mb: problem?.mem_limit_mb ?? '',
         time_limit_ms: problem?.time_limit_ms ?? '',
+        test_cases:
+            problem != null ? deepCopyTestCases(problem.test_cases) : [],
     });
 
     useEffect(() => {
         if (problem != null) {
-            setProblem({
-                title: problem?.title ?? '',
-                description: problem?.description ?? '',
-                mem_limit_mb: problem?.mem_limit_mb ?? '',
-                time_limit_ms: problem?.time_limit_ms ?? '',
+            setEditedProblem({
+                title: problem.title,
+                description: problem.description,
+                mem_limit_mb: problem.mem_limit_mb,
+                time_limit_ms: problem.time_limit_ms,
+                test_cases: deepCopyTestCases(problem.test_cases),
             });
         }
     }, [problem, setEditedProblem]);
 
-    useEffect(() => {
-        const loadProblem = async () => {
-            const response = await call(
-                `/problem/${problemId}`,
-                'GET',
-                {},
-                user
-            );
-
-            console.log(response);
-
-            if (response.status === STATUS_OK) {
-                setProblem(response.data);
-            }
-        };
-
-        loadProblem();
-    }, [call, user, problemId]);
-
-    // Handle input change
     const handleChange = (e) => {
         setEditedProblem({
             ...editedProblem,
@@ -56,10 +38,17 @@ const AuthorProblemDetails = () => {
         });
     };
 
-    // Handle form submission
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('SAVING CHANGES');
+
+        onSubmit(editedProblem);
+    };
+
+    const handleChangeTestCases = (testCases) => {
+        setEditedProblem({
+            ...editedProblem,
+            test_cases: testCases,
+        });
     };
 
     return (
@@ -124,9 +113,18 @@ const AuthorProblemDetails = () => {
                             />
                         </Form.Group>
 
+                        <EditableTestCases
+                            testCases={editedProblem.test_cases}
+                            changeTestCases={handleChangeTestCases}
+                        />
+
                         {/* Save Button */}
-                        <Button variant="primary" type="submit">
-                            Save Changes
+                        <Button
+                            variant="primary"
+                            type="submit"
+                            className="mt-5"
+                        >
+                            Save
                         </Button>
                     </Form>
                 </Card.Body>
@@ -135,4 +133,4 @@ const AuthorProblemDetails = () => {
     );
 };
 
-export default AuthorProblemDetails;
+export default EditableProblem;
